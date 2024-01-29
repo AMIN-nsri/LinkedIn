@@ -1,0 +1,6 @@
+/Users/amin/Documents/University/Term 3/Data Structure/Final Project/final-project-AMIN-nsri/Linked-In/bin/Release/net7.0/publish/Linked-In
+/Users/amin/Documents/University/Term 3/Data Structure/Final Project/final-project-AMIN-nsri/Linked-In/bin/Release/net7.0/publish/Linked-In.dll
+/Users/amin/Documents/University/Term 3/Data Structure/Final Project/final-project-AMIN-nsri/Linked-In/bin/Release/net7.0/publish/Linked-In.deps.json
+/Users/amin/Documents/University/Term 3/Data Structure/Final Project/final-project-AMIN-nsri/Linked-In/bin/Release/net7.0/publish/Linked-In.runtimeconfig.json
+/Users/amin/Documents/University/Term 3/Data Structure/Final Project/final-project-AMIN-nsri/Linked-In/bin/Release/net7.0/publish/Linked-In.pdb
+/Users/amin/Documents/University/Term 3/Data Structure/Final Project/final-project-AMIN-nsri/Linked-In/bin/Release/net7.0/publish/Newtonsoft.Json.dll

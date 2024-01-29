@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Linked_In;
+//using System.Text.Json;
 
 namespace LinkedIn
 {
@@ -10,49 +11,40 @@ namespace LinkedIn
     {
         static void Main(string[] args)
         {
-            List<User> usersList = new List<User>();
-            Graph socialNetwork = LoadGraphData("users(99).json");
+            // Loading Data from JSON file
+            List<User> usersList = LoadData("users(99).json");
 
+            // Getting instance to create graph
+            Graph socialNetwork = new Graph();
+
+            // Adding Nodes to graph
+            foreach(var user in usersList)
+            {
+                socialNetwork.AddUser(user);
+            }
+
+            // Adding Connections
+            foreach (var user in usersList)
+            {
+                var x = user.convertIdToUser(usersList);
+                foreach(var user2 in x)
+                {
+                    socialNetwork.AddConnection(user, user2);
+                }
+            }
+
+            Menu();
+            
 
         }
 
-        public static Graph LoadGraphData(string filePath)
+        public static List<User> LoadData(string filePath)
         {
             try
             {
+
                 string jsonData = File.ReadAllText(filePath);
-                List<User> userDataList = JsonConvert.DeserializeObject<List<User>>(jsonData);
-
-                Graph socialNetwork = new Graph();
-
-                foreach (var userData in userDataList)
-                {
-                    User user = new User
-                    {
-                        ID = int.Parse(userData.ID),
-                        FirstName = userData.FirstName.Split(' ')[0],
-                        LastName = userData.LastName.Split(' ')[1],
-                        BirthDate = userData.BirthDate,
-                        // ... other user information
-
-                        Connections = new List<User>()
-                    };
-
-                    foreach (var connectionId in userData.connectionId)
-                    {
-                        int connectionID = int.Parse(connectionId);
-                        User connectionUser = socialNetwork.Nodes.Find(u => u.ID == connectionID);
-
-                        if (connectionUser != null)
-                        {
-                            socialNetwork.AddConnection(user, connectionUser);
-                        }
-                    }
-
-                    socialNetwork.Nodes.Add(user);
-                }
-
-                return socialNetwork;
+                return JsonConvert.DeserializeObject<List < User>>(jsonData);
             }
             catch (Exception ex)
             {
@@ -60,17 +52,33 @@ namespace LinkedIn
                 return null;
             }
         }
-
-        public User convertIntToUser(int userID, List<User> usersList)
+        
+        // Showing Recommendation by User ID
+        public void ShowRecommendation(int targetUserID, Graph socialNetwork)
         {
-            foreach(var user in usersList)
+            User targetUser = socialNetwork.Nodes.FirstOrDefault(u => u.ID == targetUserID);
+
+            if (targetUser != null)
             {
-                if(user.ID == userID)
-                {
-                    return user;
-                }
+                List<User> recommendations = socialNetwork.GenerateRecommendations(targetUser);
+                socialNetwork.DisplayRecommendations(recommendations);
             }
-            return null;
+            else
+            {
+                // Handle the case where the target user is not found
+                Console.WriteLine("the target user is not found!");
+            }
+        }
+
+        public static void Menu()
+        {
+            string input;
+            do
+            {
+
+                input = Console.ReadLine();
+
+            } while (input != "E");
         }
     }
 }
