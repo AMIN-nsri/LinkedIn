@@ -34,7 +34,9 @@ namespace LinkedIn
                     socialNetwork.AddConnection(user, user2);
                 }
             }
-
+            var y = usersList[0];
+            PrintFullInfo(y, socialNetwork);
+            Console.ReadKey();
             Menu(usersList, socialNetwork);
             
 
@@ -55,13 +57,40 @@ namespace LinkedIn
             }
         }
 
-        public static void WriteData(List<User> usersList, string filePath)
+        public static void WriteData(User user, List<User> usersList, string filePath)
         {
             try
             {
+                // Find the specific item you want to update
+                var specialItem = usersList.Find(i => i == user);
+                if (specialItem != null)
+                {
+                    // Modify the special item
+                    specialItem = user;
+                    //specialItem.Property1 = "New Value1";
+                    //specialItem.Property2 = 789; // Assuming you want to change this
+                                                 // ...make other changes as needed
+                }
+                else
+                {
+                    // Handle the case where the item was not found
+                    Console.WriteLine("user not found");
+                    // For example, you can add a new item if it does not exist
+                    //items.Add(new YourDataObject { Property1 = "New Value1", Property2 = 789 });
+                }
+
+                // Serialize the list back to JSON including the updated item
                 string jsonString = JsonConvert.SerializeObject(usersList, Formatting.Indented);
+
+                // Write the new JSON string back to the file
                 File.WriteAllText(filePath, jsonString);
+
                 Console.WriteLine("JSON file updated successfully!");
+
+
+                //string jsonString = JsonConvert.SerializeObject(usersList, Formatting.Indented);
+                //File.WriteAllText(filePath, jsonString);
+                //Console.WriteLine("JSON file updated successfully!");
             }
             catch (Exception ex)
             {
@@ -187,10 +216,10 @@ namespace LinkedIn
                             {
                                 user.Connect(foundUser);
                                 socialNetwork.AddConnection(user, foundUser);
-                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.ForegroundColor = ConsoleColor.Green;
                                 Console.WriteLine("Connected Successfuly!");
                                 Console.ForegroundColor = ConsoleColor.White;
-
+                                WriteData(user, userList, "users(99).json");
                                 TurnBackPause();
                             }
                             else
@@ -206,7 +235,7 @@ namespace LinkedIn
                             Pause.Dot("Incorrect ID Format", 3);
                             Console.ForegroundColor = ConsoleColor.White;
                         }
-                        TurnBackPause();
+                        //TurnBackPause();
                         break;
                     case "C":
                         Console.ForegroundColor = ConsoleColor.Blue;
