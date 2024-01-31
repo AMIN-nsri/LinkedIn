@@ -41,20 +41,39 @@ namespace Linked_In
 
         public void PrintData()
         {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"ID:                  ");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(ID);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"Name:                ");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(name);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"Date of Birth:       ");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(dateOfBirth);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"University Location: ");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(universityLocation);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"Field of Study:      ");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(field);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"Workplace:           ");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(workplace);
-            foreach(var item in specialties)
-            {
-                Console.WriteLine(item);
-            }
-            foreach (var item in connectionId)
-            {
-                Console.WriteLine(item);
-            }
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Specialties:");
+            Console.ForegroundColor = ConsoleColor.White;
+            string result = string.Join(", ", specialties);
+            Console.WriteLine(result);
+            //foreach (var item in connectionId)
+            //{
+            //    Console.WriteLine(item);
+            //}
         }
 
     }

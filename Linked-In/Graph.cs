@@ -86,7 +86,6 @@ namespace Linked_In
             return int.MaxValue;
         }
 
-
         public double CalculateSimilarity(User targetUser, User otherUser)
         {
             // Set weights for different features
