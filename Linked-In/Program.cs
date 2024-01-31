@@ -50,13 +50,27 @@ namespace LinkedIn
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading graph data: {ex.Message}");
+                Console.WriteLine($"Error Loading Graph Data: {ex.Message}");
                 return null;
+            }
+        }
+
+        public static void WriteData(List<User> usersList, string filePath)
+        {
+            try
+            {
+                string jsonString = JsonConvert.SerializeObject(usersList, Formatting.Indented);
+                File.WriteAllText(filePath, jsonString);
+                Console.WriteLine("JSON file updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Writing Graph Data: {ex.Message}");
             }
         }
         
         // Showing Recommendation by User ID
-        public void ShowRecommendation(int targetUserID, Graph socialNetwork)
+        public static void ShowRecommendation(int targetUserID, Graph socialNetwork)
         {
             User targetUser = socialNetwork.Nodes.FirstOrDefault(u => u.ID == targetUserID);
 
@@ -122,11 +136,16 @@ namespace LinkedIn
                     string password2 = input;
                     User foundUserByBirth = usersList.FirstOrDefault(User => User.dateOfBirth == password2);
                     User foundUserByID = usersList.FirstOrDefault(User => User.ID == id);
-                    if (foundUserByBirth == foundUserByID)
+                    if (foundUserByBirth == foundUserByID && foundUserByID != null)
                     {
                         UserMenu(foundUserByID, usersList, socialNetwork);
                     }
-                    else Pause.Dot("ID & Password Doesn't Match", 3);
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Pause.Dot("ID & Password Doesn't Match", 3);
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
                     break;
                 default:
                     Messages.Default();
@@ -134,6 +153,226 @@ namespace LinkedIn
 
             }
         }
+
+        public static void UserMenu(User user, List<User> userList, Graph socialNetwork)
+        {
+            string s;
+            bool Deleted = false;
+            do
+            {
+                Messages.UserMenu(user.name);
+                s = Console.ReadLine();
+                Messages.Program();
+                switch (s)
+                {
+                    case "P":
+                        PrintFullInfo(user, socialNetwork);
+                        TurnBackPause();
+                        break;
+                    case "R":
+                        Console.WriteLine("Here's your List of Recommendation:");
+                        ShowRecommendation(user.ID, socialNetwork);
+                        // Make an option to follow instantly!
+                        Console.WriteLine("Enter User's ID to Connect or \"b\" to Turn Back");
+                        string input3 = Console.ReadLine();
+                        int ID2;
+                        if (input3 == "b")
+                            break;
+                        Messages.Program();
+                        if (int.TryParse(input3, out ID2))
+                        {
+                            User foundUser = userList.FirstOrDefault(User => User.ID == ID2);
+
+                            if (foundUser != null)
+                            {
+                                user.Connect(foundUser);
+                                socialNetwork.AddConnection(user, foundUser);
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Connected Successfuly!");
+                                Console.ForegroundColor = ConsoleColor.White;
+
+                                TurnBackPause();
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Pause.Dot("User Not Found", 3);
+                                Console.ForegroundColor = ConsoleColor.White;
+                            }
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Pause.Dot("Incorrect ID Format", 3);
+                            Console.ForegroundColor = ConsoleColor.White;
+                        }
+                        TurnBackPause();
+                        break;
+                    case "C":
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write("Your Connections:");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        var connections = socialNetwork.GetConnections(user);
+                        foreach(var connection in connections)
+                        {
+                            PrintFullInfo(connection);
+                            Console.WriteLine("----------------------------");
+                        }
+                        //PrintConnections(user, socialNetwork);
+                        TurnBackPause();
+                        break;
+                    case "I":
+                        Console.WriteLine("Enter User's ID:");
+                        string input2 = Console.ReadLine();
+                        int ID;
+                        Messages.Program();
+                        if (int.TryParse(input2, out ID))
+                        {
+                            User foundUser = userList.FirstOrDefault(User => User.ID == ID);
+
+                            if (foundUser != null)
+                            {
+                                PrintFullInfo(foundUser);
+                                if(user.isConnected(foundUser))
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Green;
+                                    Console.WriteLine("Connected!");
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                    Console.WriteLine("Wanna Disconnect?(Y/N)");
+                                    string x = Console.ReadLine();
+                                    Pause.ClearLine();
+                                    Pause.ClearLine();
+                                    if (x=="Y")
+                                    {
+                                        Pause.ClearLine();
+                                        user.Disconnect(foundUser);
+                                        socialNetwork.RemoveConnection(user, foundUser);
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine("Not Connected!");
+                                        Console.ForegroundColor = ConsoleColor.White;
+                                    }
+                                }
+                                else
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("Not Connected!");
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                    Console.WriteLine("Wanna Connect?(Y/N)");
+                                    string x = Console.ReadLine();
+                                    Pause.ClearLine();
+                                    Pause.ClearLine();
+                                    if (x == "Y")
+                                    {
+                                        Pause.ClearLine();
+                                        user.Connect(foundUser);
+                                        socialNetwork.AddConnection(user, foundUser);
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.WriteLine("Connected!");
+                                        Console.ForegroundColor = ConsoleColor.White;
+                                    }
+                                }
+                                TurnBackPause();
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Pause.Dot("User Not Found", 3);
+                                Console.ForegroundColor = ConsoleColor.White;
+                            }
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Pause.Dot("Incorrect ID Format", 3);
+                            Console.ForegroundColor = ConsoleColor.White;
+                        }
+                        break;
+                    case "N":
+                        Messages.Program();
+                        Console.WriteLine("Enter User's Name:");
+                        string name = Console.ReadLine();
+                        Messages.Program();
+                        User foundUser2 = userList.FirstOrDefault(User => User.name == name);
+                        if (foundUser2 != null)
+                        {
+                            PrintFullInfo(foundUser2);
+                            if (user.isConnected(foundUser2))
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Connected!");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.WriteLine("Wanna Disconnect?(Y/N)");
+                                string x = Console.ReadLine();
+                                Pause.ClearLine();
+                                Pause.ClearLine();
+                                if (x == "Y")
+                                {
+                                    Pause.ClearLine();
+                                    user.Disconnect(foundUser2);
+                                    socialNetwork.RemoveConnection(user, foundUser2);
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("Not Connected!");
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                }
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Not Connected!");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.WriteLine("Wanna Connect?(Y/N)");
+                                string x = Console.ReadLine();
+                                Pause.ClearLine();
+                                Pause.ClearLine();
+                                if (x == "Y")
+                                {
+                                    Pause.ClearLine();
+                                    user.Connect(foundUser2);
+                                    socialNetwork.AddConnection(user, foundUser2);
+                                    Console.ForegroundColor = ConsoleColor.Green;
+                                    Console.WriteLine("Connected!");
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                }
+                            }
+                            TurnBackPause();
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Pause.Dot("User Not Found", 3);
+                            Console.ForegroundColor = ConsoleColor.White;
+                        }
+                        break;
+                    case "D":
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Are You Sure You Want Delete Your Account?");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine("if yes type \"CONFIRM\"");
+                        string input = Console.ReadLine();
+                        if(input == "CONFIRM")
+                        {
+                            Messages.Program();
+                            Pause.Dot("Your Account Will be Deleted at the moment", 4);
+                            user.DeleteUser(userList);
+                            userList.Remove(user);
+                            socialNetwork.DeleteUser(user);
+                            Messages.Program();
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Account Deleted Successfully!");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Deleted = true;
+                        }
+                        break;
+                    default:
+                        if (s != "b")
+                            Messages.Default();
+                        break;
+                }
+            } while (s != "b" && !Deleted);
+        }
+
+        
+
         public static void AdminMenu(List<User> userList, Graph socialNetwork)
         {
             string s;
@@ -229,13 +468,17 @@ namespace LinkedIn
             user.PrintData();
             PrintConnections(user, socialNetwork);
         }
+        public static void PrintFullInfo(User user)
+        {
+            user.PrintData();
+        }
         public static void PrintConnections(User user, Graph socialNetwork)
         {
             var connections = socialNetwork.GetConnections(user);
             List<string> names = new List<string>();
             foreach (var item in connections)
                 names.Add(item.name);
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Connections:");
             Console.ForegroundColor = ConsoleColor.White;
             string result = string.Join(", ", names);

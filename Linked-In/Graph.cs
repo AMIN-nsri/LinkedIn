@@ -21,6 +21,38 @@ namespace Linked_In
             }
         }
 
+        public void DeleteUser(User user)
+        {
+            if (Nodes.Contains(user))
+            {
+                // Remove the node and its connections from the graph
+                Nodes.Remove(user);
+
+                // Remove connections from the adjacency list
+                if (AdjacencyList.ContainsKey(user))
+                {
+                    foreach (User connectedUser in AdjacencyList[user])
+                    {
+                        AdjacencyList[connectedUser].Remove(user);
+                    }
+                    AdjacencyList.Remove(user);
+                }
+
+                // Remove connections to the node from other nodes' adjacency lists
+                foreach (User otherUser in Nodes)
+                {
+                    if (AdjacencyList.ContainsKey(otherUser))
+                    {
+                        AdjacencyList[otherUser].Remove(user);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("User does not exist in the graph.");
+            }
+        }
+
         public void AddConnection(User user1, User user2)
         {
             AddUser(user1);
@@ -36,7 +68,23 @@ namespace Linked_In
             }
         }
 
-        public List<User> GetConnections(User user)
+        public void RemoveConnection(User user1, User user2)
+        {
+            if (Nodes.Contains(user1) && Nodes.Contains(user2))
+            {
+                if (AdjacencyList.ContainsKey(user1))
+                {
+                    AdjacencyList[user1].Remove(user2);
+                }
+
+                if (AdjacencyList.ContainsKey(user2))
+                {
+                    AdjacencyList[user2].Remove(user1);
+                }
+            }
+        }
+
+            public List<User> GetConnections(User user)
         {
             if (AdjacencyList.ContainsKey(user))
             {
@@ -139,11 +187,11 @@ namespace Linked_In
 
             foreach (User user in Nodes)
             {
-                if (user != targetUser && CalculateDegreeOfSeparation(targetUser, user) <= 5)
+                if (user != targetUser && CalculateDegreeOfSeparation(targetUser, user) <= 5 && !targetUser.connectionId.Contains(user.ID))
                 {
                     double similarity = CalculateSimilarity(targetUser, user);
                     // Adjust the threshold as needed
-                    double threshold = 2.5;
+                    double threshold = 1.5;
                     if (similarity >= threshold)
                     {
                         recommendations.Add(user);

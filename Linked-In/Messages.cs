@@ -70,13 +70,14 @@ namespace Linked_In
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Choose One:");
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("(a) See  Recommended Users to Connect");
+            Console.WriteLine("(R) See  Recommended Users to Connect");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("(b) Show Connected Users");
-            Console.WriteLine("(c) Search User by ID");
-            Console.WriteLine("(d) Search User by Name");
+            Console.WriteLine("(P) Your Profile");
+            Console.WriteLine("(C) Show Connected Users");
+            Console.WriteLine("(I) Search User by ID");
+            Console.WriteLine("(N) Search User by Name");
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("(e) Delete account");
+            Console.WriteLine("(D) Delete account");
             Console.ForegroundColor = ConsoleColor.White;
         }
 
